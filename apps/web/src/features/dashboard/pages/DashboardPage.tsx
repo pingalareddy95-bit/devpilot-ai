@@ -11,11 +11,11 @@ export default function DashboardPage() {
 
         <main className="flex-1 p-10">
           <h1 className="text-4xl font-bold">
-            Welcome to DevPilot AI 👋
+            Welcome to DevPilot AI
           </h1>
 
           <p className="mt-3 text-slate-400">
-            Your AI-powered developer workspace.
+            AI-powered developer workspace
           </p>
         </main>
       </div>
