@@ -42,9 +42,10 @@ body,
 }
 
 body {
-  overflow: hidden;
   background: #020617;
   color: white;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 button,
