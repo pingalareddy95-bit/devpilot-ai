@@ -1,6 +1,3 @@
-import Sidebar from "@/components/layout/Sidebar/Sidebar";
-import Topbar from "@/components/layout/Topbar/Topbar";
-
 import { useDashboard } from "../hooks/useDashboard";
 
 import WelcomeBanner from "../widgets/WelcomeBanner";
@@ -16,7 +13,7 @@ const DashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#050816] text-white">
+      <div className="flex min-h-full items-center justify-center bg-[#050816] p-6 text-white">
         Loading Dashboard...
       </div>
     );
@@ -24,54 +21,60 @@ const DashboardPage = () => {
 
   if (error || !data) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#050816] text-red-400">
+      <div className="flex min-h-full items-center justify-center bg-[#050816] p-6 text-red-400">
         Failed to load dashboard.
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#050816]">
+    <div className="bg-[#050816] p-5">
 
-      <Sidebar />
+      <div className="space-y-5">
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Welcome */}
 
-        <Topbar />
+        <WelcomeBanner />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-5">
+        {/* Statistics */}
 
-          <div className="space-y-5">
+        <StatsGrid stats={data.stats} />
 
-            <WelcomeBanner />
+        {/* Main Dashboard */}
 
-            <StatsGrid stats={data.stats} />
+        <div className="grid grid-cols-12 gap-5">
 
-            <div className="grid grid-cols-12 gap-5">
+          {/* Left */}
 
-              <div className="col-span-12 xl:col-span-8 space-y-5">
+          <div className="col-span-12 space-y-5 xl:col-span-8">
 
-                <RecentProjects projects={data.recentProjects} />
+            <RecentProjects
+              projects={data.recentProjects}
+            />
 
-                <RecentChats chats={data.recentChats} />
-
-              </div>
-
-              <div className="col-span-12 xl:col-span-4 space-y-5">
-
-                <QuickActions actions={data.quickActions} />
-
-                <LearningWidget />
-
-                <DailyTip tip={data.dailyTip} />
-
-              </div>
-
-            </div>
+            <RecentChats
+              chats={data.recentChats}
+            />
 
           </div>
 
-        </main>
+          {/* Right */}
+
+          <div className="col-span-12 space-y-5 xl:col-span-4">
+
+            <QuickActions
+              actions={data.quickActions}
+            />
+
+            <LearningWidget />
+
+            <DailyTip
+              tip={data.dailyTip}
+            />
+
+          </div>
+
+        </div>
 
       </div>
 
