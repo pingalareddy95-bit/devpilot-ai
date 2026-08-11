@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { ChatMessage } from "../types/assistant";
 
 interface Props {
@@ -9,11 +10,19 @@ const ChatMessageList = ({
   messages,
   isLoading = false,
 }: Props) => {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  // Automatically scroll to the latest message
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [messages, isLoading]);
+
   return (
-    <div className="w-full">
-
+    <div className="h-full min-h-0 overflow-y-auto overscroll-contain">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-6">
-
         {messages.map((message) => {
           const isUser = message.role === "user";
 
@@ -24,15 +33,12 @@ const ChatMessageList = ({
                 isUser ? "justify-end" : "justify-start"
               }`}
             >
-
               <div
                 className={`flex max-w-[85%] items-start gap-3 ${
                   isUser ? "flex-row-reverse" : "flex-row"
                 }`}
               >
-
                 {/* Avatar */}
-
                 <div
                   className={`
                     flex
@@ -53,9 +59,9 @@ const ChatMessageList = ({
                 </div>
 
                 {/* Message */}
-
                 <div
                   className={`
+                    min-w-0
                     rounded-2xl
                     px-5
                     py-4
@@ -70,26 +76,20 @@ const ChatMessageList = ({
                     {message.content}
                   </p>
                 </div>
-
               </div>
-
             </div>
           );
         })}
 
         {/* Loading */}
-
         {isLoading && (
           <div className="flex items-start gap-3">
-
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400">
               AI
             </div>
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900 px-5 py-4">
-
               <div className="flex items-center gap-1.5">
-
                 <span className="h-2 w-2 animate-bounce rounded-full bg-blue-400" />
 
                 <span
@@ -101,16 +101,14 @@ const ChatMessageList = ({
                   className="h-2 w-2 animate-bounce rounded-full bg-blue-400"
                   style={{ animationDelay: "300ms" }}
                 />
-
               </div>
-
             </div>
-
           </div>
         )}
 
+        {/* Scroll anchor */}
+        <div ref={bottomRef} className="h-px w-full" />
       </div>
-
     </div>
   );
 };

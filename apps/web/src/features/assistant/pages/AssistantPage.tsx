@@ -9,25 +9,15 @@ import ConversationList from "../components/ConversationList";
 const AssistantPage = () => {
   const {
     conversations,
-
     activeConversation,
-
     activeConversationId,
-
     isLoading,
-
     error,
-
     sendMessage,
-
     newChat,
-
     selectConversation,
-
     renameChat,
-
     clearChat,
-
     deleteChat,
   } = useAssistant();
 
@@ -40,24 +30,18 @@ const AssistantPage = () => {
   };
 
   return (
-    <div className="flex h-full min-h-0 overflow-hidden bg-[#050816]">
+    <div className="flex h-full min-h-0 w-full overflow-hidden">
       {/* ====================================================== */}
       {/* CONVERSATION SIDEBAR */}
       {/* ====================================================== */}
 
       <ConversationList
         conversations={conversations}
-
         activeConversationId={activeConversationId}
-
         onSelect={selectConversation}
-
         onNewChat={newChat}
-
         onRename={renameChat}
-
         onClear={clearChat}
-
         onDelete={deleteChat}
       />
 
@@ -65,39 +49,45 @@ const AssistantPage = () => {
       {/* CHAT AREA */}
       {/* ====================================================== */}
 
-      <section className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {/* ==================================================== */}
         {/* HEADER */}
         {/* ==================================================== */}
 
-        <ChatHeader
-          onNewChat={newChat}
-          onClear={() => {
-            if (activeConversationId) {
-              clearChat(activeConversationId);
-            }
-          }}
-          conversation={activeConversation}
-        />
+        <div className="flex-shrink-0">
+          <ChatHeader
+            onNewChat={newChat}
+            onClear={() => {
+              if (activeConversationId) {
+                clearChat(activeConversationId);
+              }
+            }}
+            conversation={activeConversation}
+          />
+        </div>
 
         {/* ==================================================== */}
         {/* MESSAGES */}
         {/* ==================================================== */}
 
         <div className="min-h-0 flex-1 overflow-hidden">
-          {activeConversation && activeConversation.messages.length > 0 ? (
+          {activeConversation &&
+          activeConversation.messages.length > 0 ? (
             <ChatMessageList
               messages={activeConversation.messages}
               isLoading={isLoading}
             />
           ) : (
-            <div className="h-full overflow-y-auto">
+            <div className="h-full min-h-0 overflow-y-auto overscroll-contain">
               <ChatWelcome onSuggestion={handleSuggestion} />
 
               {isLoading && (
                 <div className="px-6 pb-6">
-                  <div className="mx-auto max-w-4xl">
-                    <ChatMessageList messages={[]} isLoading />
+                  <div className="mx-auto max-w-5xl">
+                    <ChatMessageList
+                      messages={[]}
+                      isLoading
+                    />
                   </div>
                 </div>
               )}
@@ -110,8 +100,10 @@ const AssistantPage = () => {
         {/* ==================================================== */}
 
         {error && (
-          <div className="border-t border-red-500/20 bg-red-500/5 px-5 py-2">
-            <p className="mx-auto max-w-4xl text-xs text-red-400">{error}</p>
+          <div className="flex-shrink-0 border-t border-red-500/20 bg-red-500/5 px-5 py-2">
+            <p className="mx-auto max-w-5xl text-xs text-red-400">
+              {error}
+            </p>
           </div>
         )}
 
@@ -119,11 +111,14 @@ const AssistantPage = () => {
         {/* INPUT */}
         {/* ==================================================== */}
 
-        <ChatInput
-          onSend={sendMessage}
-
-          disabled={isLoading || !activeConversationId}
-        />
+        <div className="flex-shrink-0">
+          <ChatInput
+            onSend={sendMessage}
+            disabled={
+              isLoading || !activeConversationId
+            }
+          />
+        </div>
       </section>
     </div>
   );
