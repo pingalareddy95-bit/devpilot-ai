@@ -1,225 +1,249 @@
 import { create } from "zustand";
 
-import type {
-  ChatMessage,
-  Conversation,
-} from "../types/assistant";
+import type { ChatMessage, Conversation } from "../types/assistant";
 
 import { initialConversations } from "../data/assistantData";
 
 interface AssistantStore {
   conversations: Conversation[];
+
   activeConversationId: string | null;
+
   isLoading: boolean;
+
   error: string | null;
 
   setActiveConversation: (conversationId: string) => void;
 
-  addUserMessage: (
-    conversationId: string,
-    content: string,
-  ) => ChatMessage;
+  addUserMessage: (conversationId: string, content: string) => ChatMessage;
 
-  addAssistantMessage: (
-    conversationId: string,
-    message: ChatMessage,
-  ) => void;
+  addAssistantMessage: (conversationId: string, message: ChatMessage) => void;
 
   createConversation: () => string;
+
+  renameConversation: (conversationId: string, title: string) => void;
+
+  clearConversation: (conversationId: string) => void;
+
+  deleteConversation: (conversationId: string) => void;
 
   setLoading: (loading: boolean) => void;
 
   setError: (error: string | null) => void;
-
-  clearConversation: (conversationId: string) => void;
 }
 
 const createId = (prefix: string) =>
-  `${prefix}-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+  `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-export const useAssistantStore = create<AssistantStore>(
-  (set) => ({
-    conversations: initialConversations,
+export const useAssistantStore = create<AssistantStore>((set) => ({
+  // ==========================================================
+  // INITIAL STATE
+  // ==========================================================
 
-    activeConversationId:
-      initialConversations[0]?.id ?? null,
+  conversations: initialConversations,
 
-    isLoading: false,
+  activeConversationId: initialConversations[0]?.id ?? null,
 
-    error: null,
+  isLoading: false,
 
-    // ============================================================
-    // SELECT CONVERSATION
-    // ============================================================
+  error: null,
 
-    setActiveConversation: (conversationId) => {
-      set({
-        activeConversationId: conversationId,
-        error: null,
-      });
-    },
+  // ==========================================================
+  // SELECT CONVERSATION
+  // ==========================================================
 
-    // ============================================================
-    // ADD USER MESSAGE
-    // ============================================================
+  setActiveConversation: (conversationId) => {
+    set({
+      activeConversationId: conversationId,
 
-    addUserMessage: (
-      conversationId,
+      error: null,
+    });
+  },
+
+  // ==========================================================
+  // ADD USER MESSAGE
+  // ==========================================================
+
+  addUserMessage: (conversationId, content) => {
+    const message: ChatMessage = {
+      id: createId("user"),
+
+      role: "user",
+
       content,
-    ) => {
-      const message: ChatMessage = {
-        id: createId("user"),
-        role: "user",
-        content,
-        createdAt: new Date().toISOString(),
-      };
 
-      set((state) => ({
-        conversations: state.conversations.map(
-          (conversation) => {
-            if (
-              conversation.id !== conversationId
-            ) {
-              return conversation;
-            }
+      createdAt: new Date().toISOString(),
+    };
 
-            return {
-              ...conversation,
+    set((state) => ({
+      conversations: state.conversations.map((conversation) => {
+        if (conversation.id !== conversationId) {
+          return conversation;
+        }
 
-              title:
-                conversation.messages.length === 0
-                  ? content.slice(0, 40)
-                  : conversation.title,
+        return {
+          ...conversation,
 
-              messages: [
-                ...conversation.messages,
-                message,
-              ],
+          title:
+            conversation.messages.length === 0
+              ? content.slice(0, 40)
+              : conversation.title,
 
-              updatedAt:
-                new Date().toISOString(),
-            };
-          },
-        ),
-      }));
+          messages: [...conversation.messages, message],
 
-      return message;
-    },
+          updatedAt: new Date().toISOString(),
+        };
+      }),
+    }));
 
-    // ============================================================
-    // ADD ASSISTANT MESSAGE
-    // ============================================================
+    return message;
+  },
 
-    addAssistantMessage: (
-      conversationId,
-      message,
-    ) => {
-      set((state) => ({
-        conversations: state.conversations.map(
-          (conversation) => {
-            if (
-              conversation.id !== conversationId
-            ) {
-              return conversation;
-            }
+  // ==========================================================
+  // ADD ASSISTANT MESSAGE
+  // ==========================================================
 
-            return {
-              ...conversation,
+  addAssistantMessage: (conversationId, message) => {
+    set((state) => ({
+      conversations: state.conversations.map((conversation) => {
+        if (conversation.id !== conversationId) {
+          return conversation;
+        }
 
-              messages: [
-                ...conversation.messages,
-                message,
-              ],
+        return {
+          ...conversation,
 
-              updatedAt:
-                new Date().toISOString(),
-            };
-          },
-        ),
-      }));
-    },
+          messages: [...conversation.messages, message],
 
-    // ============================================================
-    // CREATE NEW CONVERSATION
-    // ============================================================
+          updatedAt: new Date().toISOString(),
+        };
+      }),
+    }));
+  },
 
-    createConversation: () => {
-      const id = createId("conversation");
+  // ==========================================================
+  // CREATE NEW CONVERSATION
+  // ==========================================================
 
-      const conversation: Conversation = {
-        id,
-        title: "New Conversation",
-        messages: [],
-        createdAt:
-          new Date().toISOString(),
-        updatedAt:
-          new Date().toISOString(),
-      };
+  createConversation: () => {
+    const id = createId("conversation");
 
-      set((state) => ({
-        conversations: [
-          conversation,
-          ...state.conversations,
-        ],
+    const now = new Date().toISOString();
 
-        activeConversationId: id,
+    const conversation: Conversation = {
+      id,
+
+      title: "New Conversation",
+
+      messages: [],
+
+      createdAt: now,
+
+      updatedAt: now,
+    };
+
+    set((state) => ({
+      conversations: [conversation, ...state.conversations],
+
+      activeConversationId: id,
+
+      error: null,
+    }));
+
+    return id;
+  },
+
+  // ==========================================================
+  // RENAME CONVERSATION
+  // ==========================================================
+
+  renameConversation: (conversationId, title) => {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      return;
+    }
+
+    set((state) => ({
+      conversations: state.conversations.map((conversation) => {
+        if (conversation.id !== conversationId) {
+          return conversation;
+        }
+
+        return {
+          ...conversation,
+
+          title: trimmedTitle,
+
+          updatedAt: new Date().toISOString(),
+        };
+      }),
+    }));
+  },
+
+  // ==========================================================
+  // CLEAR CONVERSATION MESSAGES
+  // ==========================================================
+
+  clearConversation: (conversationId) => {
+    set((state) => ({
+      conversations: state.conversations.map((conversation) => {
+        if (conversation.id !== conversationId) {
+          return conversation;
+        }
+
+        return {
+          ...conversation,
+
+          messages: [],
+
+          updatedAt: new Date().toISOString(),
+        };
+      }),
+    }));
+  },
+
+  // ==========================================================
+  // DELETE CONVERSATION
+  // ==========================================================
+
+  deleteConversation: (conversationId) => {
+    set((state) => {
+      const remaining = state.conversations.filter(
+        (conversation) => conversation.id !== conversationId,
+      );
+
+      const wasActive = state.activeConversationId === conversationId;
+
+      return {
+        conversations: remaining,
+
+        activeConversationId: wasActive
+          ? (remaining[0]?.id ?? null)
+          : state.activeConversationId,
 
         error: null,
-      }));
+      };
+    });
+  },
 
-      return id;
-    },
+  // ==========================================================
+  // LOADING
+  // ==========================================================
 
-    // ============================================================
-    // LOADING STATE
-    // ============================================================
+  setLoading: (loading) => {
+    set({
+      isLoading: loading,
+    });
+  },
 
-    setLoading: (loading) => {
-      set({
-        isLoading: loading,
-      });
-    },
+  // ==========================================================
+  // ERROR
+  // ==========================================================
 
-    // ============================================================
-    // ERROR STATE
-    // ============================================================
-
-    setError: (error) => {
-      set({
-        error,
-      });
-    },
-
-    // ============================================================
-    // CLEAR CONVERSATION
-    // ============================================================
-
-    clearConversation: (
-      conversationId,
-    ) => {
-      set((state) => ({
-        conversations:
-          state.conversations.map(
-            (conversation) => {
-              if (
-                conversation.id !==
-                conversationId
-              ) {
-                return conversation;
-              }
-
-              return {
-                ...conversation,
-                messages: [],
-                title: "New Conversation",
-                updatedAt:
-                  new Date().toISOString(),
-              };
-            },
-          ),
-      }));
-    },
-  }),
-);
+  setError: (error) => {
+    set({
+      error,
+    });
+  },
+}));

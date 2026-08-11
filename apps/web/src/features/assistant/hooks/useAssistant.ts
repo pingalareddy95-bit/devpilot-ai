@@ -1,53 +1,92 @@
 import { useCallback } from "react";
 
-import { sendAssistantMessage } from "../service/assistantService";
-import { useAssistantStore } from "../store/assistantStore";
+import {
+  sendAssistantMessage,
+} from "../service/assistantService";
+
+import {
+  useAssistantStore,
+} from "../store/assistantStore";
 
 export const useAssistant = () => {
-  const conversations = useAssistantStore(
-    (state) => state.conversations,
-  );
 
-  const activeConversationId = useAssistantStore(
-    (state) => state.activeConversationId,
-  );
+  const conversations =
+    useAssistantStore(
+      (state) =>
+        state.conversations,
+    );
 
-  const isLoading = useAssistantStore(
-    (state) => state.isLoading,
-  );
+  const activeConversationId =
+    useAssistantStore(
+      (state) =>
+        state.activeConversationId,
+    );
 
-  const error = useAssistantStore(
-    (state) => state.error,
-  );
+  const isLoading =
+    useAssistantStore(
+      (state) =>
+        state.isLoading,
+    );
+
+  const error =
+    useAssistantStore(
+      (state) =>
+        state.error,
+    );
 
   const setActiveConversation =
     useAssistantStore(
-      (state) => state.setActiveConversation,
+      (state) =>
+        state.setActiveConversation,
     );
 
-  const addUserMessage = useAssistantStore(
-    (state) => state.addUserMessage,
-  );
+  const addUserMessage =
+    useAssistantStore(
+      (state) =>
+        state.addUserMessage,
+    );
 
-  const addAssistantMessage = useAssistantStore(
-    (state) => state.addAssistantMessage,
-  );
+  const addAssistantMessage =
+    useAssistantStore(
+      (state) =>
+        state.addAssistantMessage,
+    );
 
-  const createConversation = useAssistantStore(
-    (state) => state.createConversation,
-  );
+  const createConversation =
+    useAssistantStore(
+      (state) =>
+        state.createConversation,
+    );
 
-  const setLoading = useAssistantStore(
-    (state) => state.setLoading,
-  );
+  const renameConversation =
+    useAssistantStore(
+      (state) =>
+        state.renameConversation,
+    );
 
-  const setError = useAssistantStore(
-    (state) => state.setError,
-  );
+  const clearConversation =
+    useAssistantStore(
+      (state) =>
+        state.clearConversation,
+    );
 
-  const clearConversation = useAssistantStore(
-    (state) => state.clearConversation,
-  );
+  const deleteConversation =
+    useAssistantStore(
+      (state) =>
+        state.deleteConversation,
+    );
+
+  const setLoading =
+    useAssistantStore(
+      (state) =>
+        state.setLoading,
+    );
+
+  const setError =
+    useAssistantStore(
+      (state) =>
+        state.setError,
+    );
 
   // ============================================================
   // ACTIVE CONVERSATION
@@ -56,111 +95,277 @@ export const useAssistant = () => {
   const activeConversation =
     conversations.find(
       (conversation) =>
-        conversation.id === activeConversationId,
+        conversation.id ===
+        activeConversationId,
     ) ?? null;
 
   // ============================================================
   // SEND MESSAGE
   // ============================================================
 
-  const sendMessage = useCallback(
-    async (content: string) => {
-      const trimmedContent = content.trim();
+  const sendMessage =
+    useCallback(
+      async (
+        content: string,
+      ) => {
 
-      if (!trimmedContent || !activeConversationId) {
-        return;
-      }
+        const trimmedContent =
+          content.trim();
 
-      setError(null);
+        if (
+          !trimmedContent ||
+          !activeConversationId
+        ) {
+          return;
+        }
 
-      // Add user message immediately
-      addUserMessage(
-        activeConversationId,
-        trimmedContent,
-      );
+        setError(null);
 
-      setLoading(true);
+        addUserMessage(
+          activeConversationId,
+          trimmedContent,
+        );
 
-      try {
-        const response =
-          await sendAssistantMessage(
-            trimmedContent,
+        setLoading(true);
+
+        try {
+
+          const response =
+            await sendAssistantMessage(
+              trimmedContent,
+            );
+
+          addAssistantMessage(
+            activeConversationId,
+            response.message,
           );
 
-        addAssistantMessage(
-          activeConversationId,
-          response.message,
-        );
-      } catch (err) {
-        console.error(
-          "Assistant message failed:",
-          err,
-        );
+        } catch (err) {
 
-        setError(
-          "Unable to generate an AI response. Please try again.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [
-      activeConversationId,
-      addUserMessage,
-      addAssistantMessage,
-      setLoading,
-      setError,
-    ],
-  );
+          console.error(
+            "Assistant message failed:",
+            err,
+          );
+
+          setError(
+            "Unable to generate an AI response. Please try again.",
+          );
+
+        } finally {
+
+          setLoading(false);
+
+        }
+
+      },
+      [
+        activeConversationId,
+        addUserMessage,
+        addAssistantMessage,
+        setLoading,
+        setError,
+      ],
+    );
 
   // ============================================================
   // NEW CHAT
   // ============================================================
 
-  const newChat = useCallback(() => {
-    createConversation();
-    setError(null);
-  }, [createConversation, setError]);
+  const newChat =
+    useCallback(
+      () => {
+
+        createConversation();
+
+        setError(null);
+
+      },
+      [
+        createConversation,
+        setError,
+      ],
+    );
 
   // ============================================================
   // SELECT CHAT
   // ============================================================
 
-  const selectConversation = useCallback(
-    (conversationId: string) => {
-      setActiveConversation(conversationId);
-      setError(null);
-    },
-    [setActiveConversation, setError],
-  );
+  const selectConversation =
+    useCallback(
+      (
+        conversationId: string,
+      ) => {
+
+        setActiveConversation(
+          conversationId,
+        );
+
+        setError(null);
+
+      },
+      [
+        setActiveConversation,
+        setError,
+      ],
+    );
+
+  // ============================================================
+  // RENAME CHAT
+  // ============================================================
+
+  const renameChat =
+    useCallback(
+      (
+        conversationId: string,
+      ) => {
+
+        const conversation =
+          conversations.find(
+            (item) =>
+              item.id ===
+              conversationId,
+          );
+
+        if (!conversation) {
+          return;
+        }
+
+        const title =
+          window.prompt(
+            "Rename conversation",
+            conversation.title,
+          );
+
+        if (
+          title === null ||
+          !title.trim()
+        ) {
+          return;
+        }
+
+        renameConversation(
+          conversationId,
+          title,
+        );
+
+      },
+      [
+        conversations,
+        renameConversation,
+      ],
+    );
 
   // ============================================================
   // CLEAR CHAT
   // ============================================================
 
-  const clearChat = useCallback(() => {
-    if (!activeConversationId) {
-      return;
-    }
+  const clearChat =
+    useCallback(
+      (
+        conversationId: string,
+      ) => {
 
-    clearConversation(activeConversationId);
-    setError(null);
-  }, [
-    activeConversationId,
-    clearConversation,
-    setError,
-  ]);
+        const conversation =
+          conversations.find(
+            (item) =>
+              item.id ===
+              conversationId,
+          );
+
+        if (!conversation) {
+          return;
+        }
+
+        const confirmed =
+          window.confirm(
+            `Clear all messages from "${conversation.title}"?`,
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        clearConversation(
+          conversationId,
+        );
+
+        setError(null);
+
+      },
+      [
+        conversations,
+        clearConversation,
+        setError,
+      ],
+    );
+
+  // ============================================================
+  // DELETE CHAT
+  // ============================================================
+
+  const deleteChat =
+    useCallback(
+      (
+        conversationId: string,
+      ) => {
+
+        const conversation =
+          conversations.find(
+            (item) =>
+              item.id ===
+              conversationId,
+          );
+
+        if (!conversation) {
+          return;
+        }
+
+        const confirmed =
+          window.confirm(
+            `Delete "${conversation.title}" permanently?`,
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        deleteConversation(
+          conversationId,
+        );
+
+        setError(null);
+
+      },
+      [
+        conversations,
+        deleteConversation,
+        setError,
+      ],
+    );
 
   return {
+
     conversations,
+
     activeConversation,
+
     activeConversationId,
+
     isLoading,
+
     error,
 
     sendMessage,
+
     newChat,
+
     selectConversation,
+
+    renameChat,
+
     clearChat,
+
+    deleteChat,
+
   };
 };

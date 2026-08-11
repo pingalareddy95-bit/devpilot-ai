@@ -9,129 +9,122 @@ import ConversationList from "../components/ConversationList";
 const AssistantPage = () => {
   const {
     conversations,
+
     activeConversation,
+
     activeConversationId,
+
     isLoading,
+
     error,
 
     sendMessage,
+
     newChat,
+
     selectConversation,
+
+    renameChat,
+
     clearChat,
+
+    deleteChat,
   } = useAssistant();
+
+  // ============================================================
+  // SUGGESTION
+  // ============================================================
 
   const handleSuggestion = (prompt: string) => {
     void sendMessage(prompt);
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full overflow-hidden bg-[#050816]">
-
+    <div className="flex h-full min-h-0 overflow-hidden bg-[#050816]">
       {/* ====================================================== */}
       {/* CONVERSATION SIDEBAR */}
       {/* ====================================================== */}
 
       <ConversationList
         conversations={conversations}
+
         activeConversationId={activeConversationId}
+
         onSelect={selectConversation}
+
         onNewChat={newChat}
+
+        onRename={renameChat}
+
         onClear={clearChat}
+
+        onDelete={deleteChat}
       />
 
       {/* ====================================================== */}
       {/* CHAT AREA */}
       {/* ====================================================== */}
 
-      <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <section className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {/* ==================================================== */}
+        {/* HEADER */}
+        {/* ==================================================== */}
 
-        {/* ================================================== */}
-        {/* CHAT HEADER */}
-        {/* ================================================== */}
+        <ChatHeader
+          onNewChat={newChat}
+          onClear={() => {
+            if (activeConversationId) {
+              clearChat(activeConversationId);
+            }
+          }}
+          conversation={activeConversation}
+        />
 
-        <div className="flex-shrink-0">
-          <ChatHeader onNewChat={newChat} />
-        </div>
-
-        {/* ================================================== */}
-        {/* MESSAGE AREA */}
-        {/* ================================================== */}
+        {/* ==================================================== */}
+        {/* MESSAGES */}
+        {/* ==================================================== */}
 
         <div className="min-h-0 flex-1 overflow-hidden">
-
-          {activeConversation &&
-          activeConversation.messages.length > 0 ? (
-
-            /*
-             * IMPORTANT:
-             * This container owns the vertical scrollbar.
-             */
-            <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden">
-
-              <ChatMessageList
-                messages={activeConversation.messages}
-                isLoading={isLoading}
-              />
-
-            </div>
-
+          {activeConversation && activeConversation.messages.length > 0 ? (
+            <ChatMessageList
+              messages={activeConversation.messages}
+              isLoading={isLoading}
+            />
           ) : (
-
-            /*
-             * Empty conversation / welcome screen
-             */
-            <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden">
-
-              <ChatWelcome
-                onSuggestion={handleSuggestion}
-              />
+            <div className="h-full overflow-y-auto">
+              <ChatWelcome onSuggestion={handleSuggestion} />
 
               {isLoading && (
                 <div className="px-6 pb-6">
                   <div className="mx-auto max-w-4xl">
-
-                    <ChatMessageList
-                      messages={[]}
-                      isLoading
-                    />
-
+                    <ChatMessageList messages={[]} isLoading />
                   </div>
                 </div>
               )}
-
             </div>
-
           )}
-
         </div>
 
-        {/* ================================================== */}
+        {/* ==================================================== */}
         {/* ERROR */}
-        {/* ================================================== */}
+        {/* ==================================================== */}
 
         {error && (
-          <div className="flex-shrink-0 border-t border-red-500/20 bg-red-500/5 px-5 py-2">
-
-            <p className="mx-auto max-w-4xl text-xs text-red-400">
-              {error}
-            </p>
-
+          <div className="border-t border-red-500/20 bg-red-500/5 px-5 py-2">
+            <p className="mx-auto max-w-4xl text-xs text-red-400">{error}</p>
           </div>
         )}
 
-        {/* ================================================== */}
-        {/* CHAT INPUT */}
-        {/* ================================================== */}
+        {/* ==================================================== */}
+        {/* INPUT */}
+        {/* ==================================================== */}
 
-        <div className="flex-shrink-0">
-          <ChatInput
-            onSend={sendMessage}
-            disabled={isLoading || !activeConversationId}
-          />
-        </div>
+        <ChatInput
+          onSend={sendMessage}
 
+          disabled={isLoading || !activeConversationId}
+        />
       </section>
-
     </div>
   );
 };
