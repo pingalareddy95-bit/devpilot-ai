@@ -1,5 +1,8 @@
 import { useEffect, useRef } from "react";
+
 import type { ChatMessage } from "../types/assistant";
+
+import MarkdownMessage from "./MarkdownMessage";
 
 interface Props {
   messages: ChatMessage[];
@@ -10,9 +13,13 @@ const ChatMessageList = ({
   messages,
   isLoading = false,
 }: Props) => {
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const bottomRef =
+    useRef<HTMLDivElement | null>(null);
 
-  // Automatically scroll to the latest message
+  // ============================================================
+  // AUTO SCROLL
+  // ============================================================
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -24,21 +31,29 @@ const ChatMessageList = ({
     <div className="h-full min-h-0 overflow-y-auto overscroll-contain">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-6">
         {messages.map((message) => {
-          const isUser = message.role === "user";
+          const isUser =
+            message.role === "user";
 
           return (
             <div
               key={message.id}
               className={`flex w-full ${
-                isUser ? "justify-end" : "justify-start"
+                isUser
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div
                 className={`flex max-w-[85%] items-start gap-3 ${
-                  isUser ? "flex-row-reverse" : "flex-row"
+                  isUser
+                    ? "flex-row-reverse"
+                    : "flex-row"
                 }`}
               >
-                {/* Avatar */}
+                {/* ================================================== */}
+                {/* AVATAR */}
+                {/* ================================================== */}
+
                 <div
                   className={`
                     flex
@@ -58,7 +73,10 @@ const ChatMessageList = ({
                   {isUser ? "U" : "AI"}
                 </div>
 
-                {/* Message */}
+                {/* ================================================== */}
+                {/* MESSAGE */}
+                {/* ================================================== */}
+
                 <div
                   className={`
                     min-w-0
@@ -72,16 +90,25 @@ const ChatMessageList = ({
                     }
                   `}
                 >
-                  <p className="whitespace-pre-wrap break-words text-sm leading-7">
-                    {message.content}
-                  </p>
+                  {isUser ? (
+                    <p className="whitespace-pre-wrap break-words text-sm leading-7">
+                      {message.content}
+                    </p>
+                  ) : (
+                    <MarkdownMessage
+                      content={message.content}
+                    />
+                  )}
                 </div>
               </div>
             </div>
           );
         })}
 
-        {/* Loading */}
+        {/* ====================================================== */}
+        {/* LOADING */}
+        {/* ====================================================== */}
+
         {isLoading && (
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400">
@@ -94,20 +121,32 @@ const ChatMessageList = ({
 
                 <span
                   className="h-2 w-2 animate-bounce rounded-full bg-blue-400"
-                  style={{ animationDelay: "150ms" }}
+                  style={{
+                    animationDelay:
+                      "150ms",
+                  }}
                 />
 
                 <span
                   className="h-2 w-2 animate-bounce rounded-full bg-blue-400"
-                  style={{ animationDelay: "300ms" }}
+                  style={{
+                    animationDelay:
+                      "300ms",
+                  }}
                 />
               </div>
             </div>
           </div>
         )}
 
-        {/* Scroll anchor */}
-        <div ref={bottomRef} className="h-px w-full" />
+        {/* ====================================================== */}
+        {/* SCROLL ANCHOR */}
+        {/* ====================================================== */}
+
+        <div
+          ref={bottomRef}
+          className="h-px w-full"
+        />
       </div>
     </div>
   );

@@ -1,0 +1,67 @@
+.assistant-markdown {
+  width: 100%;
+  min-width: 0;
+}
+
+.assistant-markdown pre {
+  margin: 0;
+  background: transparent;
+}
+
+.assistant-markdown code {
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    Consolas,
+    monospace;
+}
+
+/* ============================================================
+   HIGHLIGHT.JS
+   ============================================================ */
+
+.assistant-markdown .hljs-comment,
+.assistant-markdown .hljs-quote {
+  color: #64748b;
+}
+
+.assistant-markdown .hljs-keyword,
+.assistant-markdown .hljs-selector-tag,
+.assistant-markdown .hljs-literal {
+  color: #c084fc;
+}
+
+.assistant-markdown .hljs-string,
+.assistant-markdown .hljs-regexp {
+  color: #86efac;
+}
+
+.assistant-markdown .hljs-number,
+.assistant-markdown .hljs-symbol {
+  color: #fbbf24;
+}
+
+.assistant-markdown .hljs-title,
+.assistant-markdown .hljs-title.function_,
+.assistant-markdown .hljs-title.class_ {
+  color: #60a5fa;
+}
+
+.assistant-markdown .hljs-variable,
+.assistant-markdown .hljs-template-variable {
+  color: #fb7185;
+}
+
+.assistant-markdown .hljs-built_in,
+.assistant-markdown .hljs-type {
+  color: #22d3ee;
+}
+
+.assistant-markdown .hljs-attr,
+.assistant-markdown .hljs-attribute {
+  color: #f0abfc;
+}
+
+.assistant-markdown .hljs-meta {
+  color: #94a3b8;
+}
