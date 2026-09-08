@@ -138,19 +138,28 @@ export const useAssistant = () => {
 
   const renameChat = useCallback(
     (conversationId: string) => {
+      console.log("RENAME CLICKED:", conversationId);
+
       const conversation = conversations.find(
         (item) => item.id === conversationId,
       );
 
+      console.log("FOUND CONVERSATION:", conversation);
+
       if (!conversation) {
+        console.error("CONVERSATION NOT FOUND:", conversationId);
         return;
       }
 
       const title = window.prompt("Rename conversation", conversation.title);
 
+      console.log("PROMPT RESULT:", title);
+
       if (title === null || !title.trim()) {
         return;
       }
+
+      console.log("RENAMING:", conversationId, "→", title);
 
       renameConversation(conversationId, title);
     },
